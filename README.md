@@ -4,6 +4,7 @@
 
 # Starting the application:
 
+-   Create environment variable file
 -   \$ npm i
 -   \$ DEBUG=hummingbird-middleware:\* npm start
 
