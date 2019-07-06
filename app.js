@@ -17,6 +17,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const GOOGLE_MAPS_PLACES_URL =
     "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+const SUCCESS_CODE = 200;
+const UNPROCESSABLE_ENTITY_CODE = 422;
 
 app.get("/places", (req, res) => {
     if (Boolean(req.query) && Boolean(req.query.input)) {
@@ -27,14 +29,19 @@ app.get("/places", (req, res) => {
                     key: process.env.GOOGLE_MAP_API_KEY
                 }
             })
-            .then(({ data, status }) => {
+            .then(({ data }) => {
                 res.set("Content-Type", "application/json");
-                res.status(status);
-                res.send(data);
+                if (Boolean(data.error_message)) {
+                    res.status(UNPROCESSABLE_ENTITY_CODE);
+                    res.send({ message: data.error_message });
+                } else {
+                    res.status(SUCCESS_CODE);
+                    res.send(data);
+                }
             });
     } else {
-        res.status(422);
-        res.send(null);
+        res.status(UNPROCESSABLE_ENTITY_CODE);
+        res.send({ message: "Unprocessable Entity" });
     }
 });
 
